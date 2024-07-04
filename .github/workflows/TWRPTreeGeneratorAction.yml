@@ -27,31 +27,32 @@ jobs:
 
       - name: Clone and Setup DumprX
         run: |
-          cd /home
+          mkdir -p $HOME/DumprX
+          cd $HOME
           git clone https://github.com/DumprX/DumprX
           cd DumprX
-          sudo chmod 777 *.sh
+          chmod 777 *.sh
           bash setup.sh
 
       - name: Generate Device Tree
         run: |
-          cd /home/DumprX
+          cd $HOME/DumprX
           aria2c -s 10 -x 10 -d . -o firmware.zip "${{ github.event.inputs.rom_url }}"
           ./extractor.sh firmware.zip
           cd ${{ github.workspace }}
           touch info.md
           echo "提交日期：$(TZ=Asia/Shanghai date '+%Y-%m-%d %H:%M:%S')" >> info.md
           echo "ROM 下载直链：${{ github.event.inputs.rom_url }}" >> info.md
-          if [ -f /home/DumprX/out/init_boot.img ]; then mv /home/DumprX/out/init_boot.img /home/DumprX/out/boot.img; fi
+          if [ -f $HOME/DumprX/out/init_boot.img ]; then mv $HOME/DumprX/out/init_boot.img $HOME/DumprX/out/boot.img; fi
           pip3 install twrpdtgen
-          python3 -m twrpdtgen /home/DumprX/out/boot.img
+          python3 -m twrpdtgen $HOME/DumprX/out/boot.img
           cd ~
-          7z a ~/GeneratedTWRPDeviceTree.zip /home/runner/work/TWRPTreeGeneratorAction/TWRPTreeGeneratorAction/output
+          7z a $HOME/GeneratedTWRPDeviceTree.zip /home/runner/work/TWRPTreeGeneratorAction/TWRPTreeGeneratorAction/output
 
       - name: Upload Device Tree
         uses: ncipollo/release-action@v1.12.0
         with:
-          artifacts: "~/GeneratedTWRPDeviceTree.zip"
+          artifacts: "$HOME/GeneratedTWRPDeviceTree.zip"
           bodyfile: "${{ github.workspace }}/info.md"
           tag: "OUTPUT_${{ env.BUILD_TIME }}_${{ github.run_id }}"
           token: ${{ secrets.GITHUB_TOKEN }}
