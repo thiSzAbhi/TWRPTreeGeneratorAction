@@ -27,9 +27,8 @@ jobs:
 
       - name: Clone and Setup DumprX
         run: |
-          mkdir -p $HOME/DumprX
           cd $HOME
-          git clone https://github.com/DumprX/DumprX
+          git clone https://github.com/DumprX/DumprX.git
           cd DumprX
           chmod 777 *.sh
           bash setup.sh
@@ -47,7 +46,7 @@ jobs:
           pip3 install twrpdtgen
           python3 -m twrpdtgen $HOME/DumprX/out/boot.img
           cd ~
-          7z a $HOME/GeneratedTWRPDeviceTree.zip /home/runner/work/TWRPTreeGeneratorAction/TWRPTreeGeneratorAction/output
+          7z a $HOME/GeneratedTWRPDeviceTree.zip ${{ github.workspace }}/output
 
       - name: Upload Device Tree
         uses: ncipollo/release-action@v1.12.0
@@ -55,4 +54,4 @@ jobs:
           artifacts: "$HOME/GeneratedTWRPDeviceTree.zip"
           bodyfile: "${{ github.workspace }}/info.md"
           tag: "OUTPUT_${{ env.BUILD_TIME }}_${{ github.run_id }}"
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}"
