@@ -6,7 +6,7 @@ on:
       rom_url:
         description: 'ROM direct download link'
         required: true
-        default: 'https://mirrorbits.lineageos.org/full/tissot/20230425/lineage-19.1-20230425-nightly-tissot-signed.zip'
+        default: 'https://assorted.downloads.oppo.com/firmware/CPH1801/CPH1801EX_11_OTA_0260_all_PDLTtXmGT1DU.ozip'
 
 jobs:
   TWRPTreeGeneratorAction:
@@ -26,10 +26,10 @@ jobs:
       - name: Generate Device Tree
         run: |
           cd ~
-          git clone --recurse-submodules https://github.com/DumprX/DumprX.git -b tools Firmware_extractor
+          git clone --recurse-submodules https://github.com/DumprX/DumprX.git Firmware_extractor
           cd Firmware_extractor
           aria2c -s 10 -x 10 -d . -o firmware.zip "${{ github.event.inputs.rom_url }}"
-          ./extractor.sh firmware.zip
+          ./setup.sh firmware.zip
           cd ${{ github.workspace }}
           touch info.md
           echo "Submission date: $(TZ=Asia/Shanghai date '+%Y-%m-%d %H:%M:%S')" >> info.md
